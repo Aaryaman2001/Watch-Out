@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="70dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Time option toggle button -->
+    <TextView
+        android:id="@+id/time_option_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time Duration for Recorder:"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/time_option_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
+
+        <RadioButton
+            android:id="@+id/time_option_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="2 Minutes"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/time_option_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4 Minutes"
+            android:textSize="18sp" />
+
+    </RadioGroup>
+
+    <!-- Child mode toggle button -->
+    <TextView
+        android:id="@+id/child_mode_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Enable Child Mode:"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Switch
+        android:id="@+id/child_mode_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+
+        android:textSize="18sp" />
+
+
+
+
+    <TextView
+        android:id="@+id/battery_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Enable Battery warning: "
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Switch
+        android:id="@+id/battery_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+
+        android:textSize="18sp" />
+
+
+    <!-- Apply changes button -->
+
+
+
+    <Button
+        android:id="@+id/apply_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Apply Changes"
+
+        />
+
+
+</LinearLayout>
+
+

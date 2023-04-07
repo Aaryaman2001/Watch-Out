@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <!--    <Button-->
+    <!--        android:id="@+id/btn_add_contact"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="5dp"-->
+    <!--        android:padding="8dp"-->
+    <!--        android:text="Add Contacts"-->
+    <!--        android:textColor="@color/white"-->
+
+    <!--        android:layout_gravity="center_horizontal|bottom"/>-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/settings"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_margin="5dp"-->
+
+    <!--        android:padding="8dp"-->
+    <!--        android:text="Settings"-->
+    <!--        android:textColor="@color/white"-->
+
+    <!--        android:layout_gravity="center_horizontal|bottom"-->
+    <!--        android:onClick="openSettings"/>-->
+
+    <Button
+        android:id="@+id/btn_add_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+
+        android:background="@drawable/button"
+        android:text="Add Contacts" />
+
+    <Button
+        android:id="@+id/settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/button"
+        android:onClick="openSettings"
+        android:text="Settings" />
+
+</LinearLayout>
+
+
