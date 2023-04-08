@@ -23,7 +23,7 @@ According to a report by the Bureau of Justice Statistics, about 50% of assault 
 
 8) Alerts emergency contacts if the smartwatch has been removed with a jerk, along with the location and a list of Bluetooth devices nearby, and starts a recording buffer.
 
-## Challenges we ran into
+## Challenges I ran into
 
 Setting up a working AI model along with all the features to make it a full fledged production ready design in 2 days was a real real struggle; but I am glad I put in the hours. 
 
