@@ -73,6 +73,8 @@ public class WatchSensorService extends Service implements SensorEventListener {
                     throw new RuntimeException(e);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

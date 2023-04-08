@@ -29,6 +29,10 @@ public class SettingsPanel extends Activity {
     boolean isChildModeOn = false;
     boolean battery = false;
 
+    private Switch ai_mode;
+
+    boolean ai = false;
+
 
 
     @Override
@@ -43,6 +47,8 @@ public class SettingsPanel extends Activity {
         applyButton = findViewById(R.id.apply_button);
         childlabel = findViewById(R.id.child_mode_label);
         battery_switch = findViewById(R.id.battery_switch);
+        ai_mode = findViewById(R.id.ai);
+
 
         DatabaseHelper db = new DatabaseHelper(this);
         ArrayList<Integer> timeChild = db.fetchChildTime();
@@ -68,6 +74,15 @@ public class SettingsPanel extends Activity {
             battery = true;
         }
 
+        if (timeChild.get(3)==0){
+            ai = false;
+        }
+        else{
+            ai = true;
+        }
+
+
+
 
         // Retrieve initial values from the calling activity's Intent extras
 //        isChildModeOn = getIntent().getBooleanArrayExtra("child_mode");
@@ -81,6 +96,7 @@ public class SettingsPanel extends Activity {
         }
         childModeSwitch.setChecked(isChildModeOn);
         battery_switch.setChecked(battery);
+        ai_mode.setChecked(ai);
 
         // Set up the click listener for the applyButton
         applyButton.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +110,7 @@ public class SettingsPanel extends Activity {
                 }
                 int child;
                 int bat;
+                int aint;
                 if(isChildModeOn = childModeSwitch.isChecked()){
                     child = 1;
 
@@ -110,8 +127,16 @@ public class SettingsPanel extends Activity {
                     bat = 0;
 
                 }
+                if(ai = ai_mode.isChecked()){
+                    aint = 1;
 
-                db.changeTimeChild(time, child, bat);
+                }
+                else{
+                    aint = 0;
+
+                }
+
+                db.changeTimeChild(time, child, bat, aint);
 
 
                 Toast.makeText(SettingsPanel.this, "Settings updated successfully", Toast.LENGTH_SHORT).show();

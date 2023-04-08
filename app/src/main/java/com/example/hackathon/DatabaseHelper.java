@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CHILD_MODE = "child_mode";
     private static final String BATTERY_SOS = "battery";
     private static final String ID = "id";
+    private static final String AI_KEY = "ai";
 
 
 
@@ -41,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("CREATE TABLE " + OTHER_TABLE +
                 "(" + ID + " INTEGER, " + TIME_DURATION + " INTEGER ,"
-                + CHILD_MODE + " INTEGER ," + BATTERY_SOS + " INTEGER )"
+                + CHILD_MODE + " INTEGER ," + BATTERY_SOS + " INTEGER, " + AI_KEY + " INTEGER )"
         );
 
 
@@ -98,24 +99,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(CONTACT_TABLE, KEY_ID + " = " + id, null);
 
     }
-    public void addTimeChild(int time , int child, int battery){
+    public void addTimeChild(int time , int child, int battery, int ai){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(ID, 1);
         values.put(TIME_DURATION, time);
         values.put(CHILD_MODE, child);
         values.put(BATTERY_SOS, battery);
+        values.put(AI_KEY, ai);
 
         db.insert(OTHER_TABLE,null, values);
     }
 
-    public void changeTimeChild(int time, int childMode, int battery){
+    public void changeTimeChild(int time, int childMode, int battery, int ai){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(ID, 1);
         cv.put(TIME_DURATION, time);
         cv.put(CHILD_MODE, childMode);
         cv.put(BATTERY_SOS, battery);
+        cv.put(AI_KEY, ai);
         db.update(OTHER_TABLE, cv,  ID + " = " + 1, null);
     }
 
@@ -127,6 +130,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             arr.add(cursor.getInt(1));
             arr.add(cursor.getInt(2));
             arr.add(cursor.getInt(3));
+            arr.add(cursor.getInt(4));
+
         }
 
         cursor.close();

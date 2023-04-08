@@ -1,5 +1,8 @@
 package com.example.hackathon;
 
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.RECORD_AUDIO;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -43,11 +46,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.microsoft.cognitiveservices.speech.ResultReason;
+import com.microsoft.cognitiveservices.speech.SpeechConfig;
+import com.microsoft.cognitiveservices.speech.SpeechRecognitionResult;
+import com.microsoft.cognitiveservices.speech.SpeechRecognizer;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +68,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Future;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_WRITE_PERMISSION = 123;
@@ -74,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
     String[] bluetooth = new String[1];
     HashMap<String, String> users = new HashMap<>();
     boolean battery = false;
+    private static final String speechSubscriptionKey = "3a407ec65c66462f9d1c3c6083e2ebd1";
+    private static final String serviceRegion = "canadacentral";
+    private String audioString ="";
+    boolean yesSpeech = true;
 
 
     @Override
@@ -84,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         Button sos = findViewById(R.id.sos);
         password = findViewById(R.id.password);
+
 //        int time = findViewById(R.id.time_option_label);
 //        Button child = findViewById(R.id.child_mode_label);
         bluetooth[0] = "";
@@ -91,8 +105,13 @@ public class MainActivity extends AppCompatActivity {
         users.put("Aarya", "1234");
 
 
+
+
+
+
+
         DatabaseHelper databaseHelper = new DatabaseHelper(this);
-//        databaseHelper.addTimeChild(2, 0,0);
+
         ArrayList<Integer> timeChild = databaseHelper.fetchChildTime();
 
         if (timeChild.get(1) == 0) {
@@ -111,6 +130,11 @@ public class MainActivity extends AppCompatActivity {
             battery = false;
         } else {
             battery = true;
+        }
+        if (timeChild.get(3) == 0) {
+            yesSpeech = false;
+        } else {
+            yesSpeech = true;
         }
 
 
@@ -143,6 +167,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        BatteryManager batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE);
+        int batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        if (batteryLevel < 90 && battery) {
+            
+            Toast.makeText(MainActivity.this, "Battery Level:" + batteryLevel + " , warning message sent.", Toast.LENGTH_SHORT).show();
+
+            String message = "This message has been sent from Watch Out, it is NOT an SOS.\n\n"
+                    + "The device's battery is low. \n\n";
+
+            for (DBContactModel i : contactList) {
+                try {
+                    String phoneNumber = i.phone;
+//                SmsManager smsManager = SmsManager.getDefault();
+
+//                int id = getSubscriptionIdForSimSlot(1);
+                    SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(1);
+                    smsManager.sendMultipartTextMessage(phoneNumber, null, smsManager.divideMessage(message), null, null);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
 
 //        Toast.makeText(MainActivity.this, loc, Toast.LENGTH_SHORT).show();
         SensorEventListener se = new SensorEventListener() {
@@ -170,6 +218,8 @@ public class MainActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -200,6 +250,8 @@ public class MainActivity extends AppCompatActivity {
                     throw new RuntimeException(e);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
 
 
@@ -223,28 +275,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-            BatteryManager batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE);
-            int batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-            if (batteryLevel < 50 && battery) {
-                Toast.makeText(MainActivity.this, "Low Battery Detected, warning message sent.", Toast.LENGTH_SHORT).show();
 
-                String message = "This message has been sent from Watch Out, it is NOT an SOS.\n\n"
-                        + "The device's battery is low: \n\n" +
-                        locationString[0];
-                for (DBContactModel i : contactList) {
-                    try {
-                        String phoneNumber = i.phone;
-//                SmsManager smsManager = SmsManager.getDefault();
-
-//                int id = getSubscriptionIdForSimSlot(1);
-                        SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(1);
-                        smsManager.sendMultipartTextMessage(phoneNumber, null, smsManager.divideMessage(message), null, null);
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
         };
 
 
@@ -291,13 +322,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void sendSOS(String location) throws InterruptedException, IOException {
+    public void sendSOS(String location) throws Exception {
         DatabaseHelper db = new DatabaseHelper(getApplicationContext());
         ArrayList<DBContactModel> contactList = db.fetchContacts();
 
 
 //        // Compose the message with recording and location
-        String message = "Emergency SOS sent from Watch Out: \n\n" +
+        String message = "This SOS has been sent from Watch Out. \n\n" +
                 location + "\n\n" +
                 bluetooth[0];
 
@@ -321,9 +352,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, "Message sent to emergency contacts.", Toast.LENGTH_SHORT).show();
         start();
 
-
     }
-    private void start() throws IOException {
+
+    private void start() throws Exception {
         if (!hasWritePermission()) {
             // Request write permission from the user
             ActivityCompat.requestPermissions(this,
@@ -338,27 +369,103 @@ public class MainActivity extends AppCompatActivity {
         MediaRecorder mr = new MediaRecorder();
         ContextWrapper wrapper = new ContextWrapper(getApplicationContext());
         File music = wrapper.getExternalFilesDir(Environment.DIRECTORY_MUSIC);
-        File file = new File(music, "Emergency "+ current + ".mp3");
+        File file = new File(music, "Emergency "+ current + ".wav");
         String path = file.getPath();
         mr.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mr.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mr.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mr.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+        path = file.getPath().replace(".mp3", ".wav");
+        mr.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
         mr.setOutputFile(path);
         mr.prepare();
         mr.start();
         Toast.makeText(getApplicationContext(), "Recording Started", Toast.LENGTH_SHORT).show();
         // Record for 10 seconds
         try {
-            Thread.sleep(120000);
+            Thread.sleep(12000);
 //            else Thread.sleep(240000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         mr.stop();
         mr.release();
+//        SpeechToText speech = new SpeechToText();
+//        String res = speech.transcribeAudio("/storage/emulated/0/Android/data/com.example.hackathon/files/Music/Emergency " + current + ".wav");
+        int requestCode = 5; // unique code for the permission request
+        ActivityCompat.requestPermissions(MainActivity.this, new String[]{RECORD_AUDIO, INTERNET}, requestCode);
+        if (yesSpeech){
+        try (SpeechConfig config = SpeechConfig.fromSubscription(speechSubscriptionKey, serviceRegion);
+             SpeechRecognizer reco = new SpeechRecognizer(config);) {
+
+            Future<SpeechRecognitionResult> task = reco.recognizeOnceAsync();
+
+            // Note: this will block the UI thread, so eventually, you want to
+            //       register for the event (see full samples)
+            SpeechRecognitionResult result = task.get();
+
+            if (result.getReason() == ResultReason.RecognizedSpeech) {
+                audioString = result.toString();
+                audioString.toLowerCase();
+            }
+
+
+        } catch (Exception ex) {
+
+            assert(false);
+        }
+        String secondMessage = "";
+        if(audioString.contains("firefighters") || audioString.contains("fire") || audioString.contains("burning")){
+            secondMessage = secondMessage + "Fire Hazard \n";
+
+        }
+        if(audioString.contains("pedophile") || audioString.contains("child abuse") || audioString.contains("molest")){
+            secondMessage = secondMessage + "Molestation \n";
+
+        }
+            if(audioString.contains("fuel") || audioString.contains("out of fuel") || audioString.contains("no gas")){
+                secondMessage = secondMessage + "No Fuel in Vehicle. \n";
+
+            }
+
+        if(audioString.contains("crash") || audioString.contains("car") || audioString.contains("accident") || audioString.contains("hurt")){
+            secondMessage = secondMessage + "Car Accident \n";
+
+        }
+            DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+            ArrayList<DBContactModel> contactList = db.fetchContacts();
+
+
+//        // Compose the message with recording and location
+            String message = "The AI voice detection was enabled, potential emergencies might include: \n\n" +
+                    secondMessage;
+
+            // Send the message with location to all contacts
+            for (DBContactModel i : contactList) {
+                try {
+                    String phoneNumber = i.phone;
+//                SmsManager smsManager = SmsManager.getDefault();
+
+//                int id = getSubscriptionIdForSimSlot(1);
+                    SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(1);
+                    smsManager.sendMultipartTextMessage(phoneNumber, null, smsManager.divideMessage(message), null, null);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            Toast.makeText(MainActivity.this, "Potential hazards have been conveyed.", Toast.LENGTH_SHORT).show();
+
+
+        }
+
+
+
         Toast.makeText(getApplicationContext(), "Recording stopped.", Toast.LENGTH_SHORT).show();
         Toast.makeText(getApplicationContext(), "Recording saved.", Toast.LENGTH_SHORT).show();
+
     }
+
+
+
 
     private boolean hasWritePermission() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
